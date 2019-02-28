@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, RouterStateSnapshot} from "@angular/router";
 import {Product, ProductService,Comment} from "../shared/product.service";
+import {WebSocketService} from "../shared/web-socket.service";
 // import {Observable} from "rxjs";
+
 
 @Component({
   selector: 'app-product-detail',
@@ -21,7 +23,10 @@ export class ProductDetailComponent implements OnInit {
   isWatched :boolean= false;
   currentBid :number ;
   constructor(private routeInfo:ActivatedRoute,
-              private productService:ProductService) { }
+              private productService:ProductService,
+              private wsService:WebSocketService
+  ) { }
+
 
   ngOnInit() {
     let productId:number = this.routeInfo.snapshot.params.productId;
@@ -55,7 +60,16 @@ export class ProductDetailComponent implements OnInit {
 
   watchProduct(){
     this.isWatched = !this.isWatched;
+    //socket 服务
+    this.wsService.createObservableSocket("ws://localhost:8085",this.product.id)
+      .subscribe(
+        products =>{
+          console.log(products);
+          let product = products.find(p=>p.productId === this.product.id)
+          this.currentBid = product.bid;
+        }
 
+      );
   }
 
 }
