@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, RouterStateSnapshot} from "@angular/router";
 import {Product, ProductService,Comment} from "../shared/product.service";
+// import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-product-detail',
@@ -11,6 +12,7 @@ export class ProductDetailComponent implements OnInit {
   // productTitle:string;
   product:Product;
   comments:Comment[];
+
   newRating :number =5;
   newComment :string ="";
 
@@ -22,9 +24,14 @@ export class ProductDetailComponent implements OnInit {
   ngOnInit() {
     let productId:number = this.routeInfo.snapshot.params.productId;
     console.log("获得productId：",productId);
-    this.product = this.productService.getPdoduct(productId);
+    //手工订阅
+    this.productService.getPdoduct(productId).subscribe(
+      product => this.product = product
+    );
 
-    this.comments = this.productService.getCommentsForProductId(productId);
+    this.productService.getCommentsForProductId(productId).subscribe(
+      comments => this.comments = comments
+    );
   }
 
   addComment(){

@@ -3,6 +3,7 @@ import {Product, ProductService} from "../shared/product.service";
 import {FormControl,FormGroup} from "@angular/forms";
 // import 'rxjs/Rx';
 import {debounceTime} from "rxjs/operators";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-product',
@@ -10,21 +11,26 @@ import {debounceTime} from "rxjs/operators";
   styleUrls: ['./product.component.css']
 })
 export class ProductComponent implements OnInit {
-  private products:Array<Product>;
+  // private products:Array<Product>;
+  private products:Observable<Product[]>; // 这里改成了流
 
-  private keyword:string ;
+  // private keyword:string ;
 
   private titleFilter:FormControl = new FormControl();
 
   // private imgUrl = "http://placehold.it/320x150";
 
   constructor(private productService :ProductService) {
+/*
     this.titleFilter.valueChanges
     // .debounceTime(500)
     .pipe(debounceTime(500))
       .subscribe(
         value => this.keyword= value
       );
+*/
+
+
 
 
   }
