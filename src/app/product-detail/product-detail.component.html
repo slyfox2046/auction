@@ -19,7 +19,7 @@
     (click)="watchProduct()" >
     {{isWatched?'取消关注': '关注'}}
   </button>
-  <label>最新出价：{{currentBid}}元</label>
+  <label>最新出价：{{currentBid | number:'.2-2'}}元</label>
 </div>
 
 <div class="well">

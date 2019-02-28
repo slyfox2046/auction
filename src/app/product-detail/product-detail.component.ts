@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, RouterStateSnapshot} from "@angular/router";
 import {Product, ProductService,Comment} from "../shared/product.service";
 import {WebSocketService} from "../shared/web-socket.service";
+import {Subscription} from "rxjs";
 // import {Observable} from "rxjs";
 
 
@@ -22,6 +23,8 @@ export class ProductDetailComponent implements OnInit {
 
   isWatched :boolean= false;
   currentBid :number ;
+
+  subscription  :Subscription;
   constructor(private routeInfo:ActivatedRoute,
               private productService:ProductService,
               private wsService:WebSocketService
@@ -59,17 +62,26 @@ export class ProductDetailComponent implements OnInit {
   }
 
   watchProduct(){
-    this.isWatched = !this.isWatched;
-    //socket 服务
-    this.wsService.createObservableSocket("ws://localhost:8085",this.product.id)
-      .subscribe(
-        products =>{
-          console.log(products);
-          let product = products.find(p=>p.productId === this.product.id)
-          this.currentBid = product.bid;
-        }
+    if (this.subscription){
+      //取消流的订阅
+      this.subscription.unsubscribe();
+      this.isWatched = false;
+      this.subscription =null;
+    }else{
+      this.isWatched = true;
+      //socket 服务
+      this.subscription = this.wsService.createObservableSocket("ws://localhost:8085",this.product.id)
+        .subscribe(
+          products =>{
+            console.log(products);
+            // let product =JSON.parse(products).find(p=>p.productId === this.product.id); //原来返回的时候是字符串，需要转换一下
+            let product =products.find(p=>p.productId === this.product.id);
+            console.log(product);
+            this.currentBid = product.bid;
+          }
+        );
+    }
 
-      );
   }
 
 }
