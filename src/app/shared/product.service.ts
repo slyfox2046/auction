@@ -1,11 +1,8 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 
 import {Observable} from "rxjs";
-// import {HttpClient} from "@angular/common/http";
-// import 'rxjs/Rx';
-import {HttpClient} from "@angular/common/http";
-import {map} from "rxjs/operators";
-
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {forEach} from "@angular/router/src/utils/collection";
 
 
 @Injectable({
@@ -29,6 +26,8 @@ export class ProductService {
   //   new Comment(4,2,"2018-10-1 22:22:23" ,"赵六",4,"东西的确不错"),
   // ];
 
+  //search 按钮动作的流，放在里，product.service 中间件
+  searchEvent:EventEmitter<ProductSearchParams> = new EventEmitter();
 
   constructor(private  http:HttpClient) { }
 
@@ -65,6 +64,42 @@ export class ProductService {
   getCommentsForProductId(id:number):Observable<Comment[]>{
     // return this.http.get("/api/product/"+id+"/comments").pipe(map((res:any)=>res.json()));
     return this.http.get<Comment[]>("/api/product/"+id+"/comments");
+  }
+
+  search(params:ProductSearchParams):Observable<Product[]>{
+    // Setup log namespace query parameter
+    // return this.http.get<Product[]>("/api/search",{params:this.encodeParams(params)});
+    let s = Object.keys(params);
+    let p = new HttpParams();
+    console.log(s);
+    s.forEach((v,k)=>{
+      p = p.append(v,params[v]);
+    })
+
+
+    return this.http.get<Product[]>("/api/products",{params:p});
+
+  }
+
+  private encodeParams(params:ProductSearchParams){
+    console.log("test123");
+    let result:HttpParams;
+    result = Object.keys(params)
+      .filter(key=>params[key])
+      .reduce((sum:HttpParams,key:string)=>{
+        sum.append(key,params[key]);
+        return sum;
+      },new HttpParams());
+    return result;
+  }
+}
+
+export class ProductSearchParams {
+  constructor(
+    public title:string,
+    public price:number,
+    public category : string
+  ){
   }
 }
 

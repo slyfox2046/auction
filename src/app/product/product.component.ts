@@ -49,6 +49,10 @@ export class ProductComponent implements OnInit {
 
   this.products = this.productService.getProducts();
 
+  //订阅search按钮的流
+    this.productService.searchEvent.subscribe(
+      params=>this.products = this.productService.search(params)
+    );
   }
 
 
