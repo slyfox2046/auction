@@ -18,6 +18,8 @@ export class ProductDetailComponent implements OnInit {
 
   isCommentHidden = true;
 
+  isWatched :boolean= false;
+  currentBid :number ;
   constructor(private routeInfo:ActivatedRoute,
               private productService:ProductService) { }
 
@@ -26,7 +28,10 @@ export class ProductDetailComponent implements OnInit {
     console.log("获得productId：",productId);
     //手工订阅
     this.productService.getPdoduct(productId).subscribe(
-      product => this.product = product
+      product => {
+        this.product = product;
+        this.currentBid = product.price;
+      }
     );
 
     this.productService.getCommentsForProductId(productId).subscribe(
@@ -45,8 +50,11 @@ export class ProductDetailComponent implements OnInit {
     this.newComment= null;
     this.newRating = 5;
 
-  //  提交后算平均星集
+    //  提交后算平均星集
+  }
 
+  watchProduct(){
+    this.isWatched = !this.isWatched;
 
   }
 
